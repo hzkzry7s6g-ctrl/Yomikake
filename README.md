@@ -22,10 +22,12 @@ npm run test:e2e   # E2E(モバイル画面サイズ)。Chromium の場所は CH
 npm run build      # dist/ に PWA を出力
 ```
 
-## スマホで使う
-`dist/` を HTTPS の静的ホスティング(GitHub Pages、Netlify、Cloudflare Pages など)に置きます。
-スマホのブラウザで開いて「ホーム画面に追加」すると、アプリとして使えます。
-カメラ(バーコード読み取り)には HTTPS が必要です。
+## スマホ・iPad で使う
+公開URL: **https://hzkzry7s6g-ctrl.github.io/Yomikake/**
+
+`main` に push すると GitHub Actions がビルドして GitHub Pages に公開します(`.github/workflows/deploy.yml`)。
+Safari で URL を開き、「共有」→「ホーム画面に追加」でアプリとして使えます。
+記録はその端末の中だけに保存され、GitHub には送られません。
 
 ## 構成
 - `src/db/` — Dexie のスキーマ(`db.ts`)、書き込み処理(`actions.ts`)、読み取りフック(`hooks.ts`)
