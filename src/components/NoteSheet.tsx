@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { Book } from '../db/db';
-import { addNote } from '../db/actions';
-import { db } from '../db/db';
+import { addNote, deleteNote } from '../db/actions';
 import { STAMPS } from '../lib/presets';
 import { Sheet } from './Sheet';
 import { useToast } from './Toast';
@@ -13,7 +12,7 @@ export function NoteSheet({ book, onClose }: { book: Book; onClose: () => void }
 
   const save = async (stamp: string, emoji: string) => {
     const id = await addNote(book.id, stamp, body);
-    toast(`${emoji} p.${book.currentPage} に残しました`, () => db.notes.delete(id));
+    toast(`${emoji} p.${book.currentPage} に残しました`, () => deleteNote(id));
     onClose();
   };
 

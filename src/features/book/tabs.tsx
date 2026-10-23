@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Book, Character, Note, Relation, Term } from '../../db/db';
 import { db } from '../../db/db';
-import { addTerm } from '../../db/actions';
+import { addTerm, deleteNote, deleteTerm } from '../../db/actions';
 import { stampOf } from '../../lib/presets';
 import { AddNamesSheet } from '../../components/AddNamesSheet';
 import { Sheet } from '../../components/Sheet';
@@ -104,7 +104,7 @@ export function NoteList({ notes, limit }: { notes: Note[]; limit?: number }) {
           <button
             className="danger-link"
             onClick={async () => {
-              await db.notes.delete(editing.id);
+              await deleteNote(editing.id);
               setEditing(null);
             }}
           >
@@ -166,7 +166,7 @@ export function TermsTab({ book, terms, hidden, onShowAll }: { book: Book; terms
           <button
             className="danger-link"
             onClick={async () => {
-              await db.terms.delete(editing.id);
+              await deleteTerm(editing.id);
               setEditing(null);
             }}
           >

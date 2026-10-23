@@ -1,15 +1,15 @@
-import { useRef, type CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import type { Book, BookStatus } from '../../db/db';
-import { exportAll, importAll } from '../../db/actions';
 import { useBooks } from '../../db/hooks';
 import { STATUS_LABELS } from '../../lib/presets';
 import { navigate } from '../../lib/router';
 import { BookCover, Progress } from '../../components/BookBadge';
 import { QuickActions } from '../../components/QuickActions';
-import { useToast } from '../../components/Toast';
+import { SyncSheet } from './SyncSheet';
 
 export function Home() {
   const books = useBooks();
+  const [syncing, setSyncing] = useState(false);
   if (!books) return null;
 
   const by = (s: BookStatus) => books.filter((b) => b.status === s);
@@ -22,7 +22,12 @@ export function Home() {
     <div className="page home">
       <header className="home-header">
         <h1>よみかけ</h1>
-        {doneThisYear > 0 && <span className="badge">{year}年 読了 {doneThisYear}冊</span>}
+        <div className="row">
+          {doneThisYear > 0 && <span className="badge">{year}年 読了 {doneThisYear}冊</span>}
+          <button className="icon-btn" aria-label="iCloud で同期" onClick={() => setSyncing(true)}>
+            ☁️
+          </button>
+        </div>
       </header>
 
       {books.length === 0 && (
@@ -56,7 +61,8 @@ export function Home() {
         (s) => by(s).length > 0 && <Shelf key={s} title={STATUS_LABELS[s]} books={by(s)} open={s === 'want'} />,
       )}
 
-      {books.length > 0 && <Backup />}
+      <SyncCard onOpen={() => setSyncing(true)} />
+      {syncing && <SyncSheet onClose={() => setSyncing(false)} />}
 
       {books.length > 0 && (
         <button className="fab" onClick={() => navigate('/add')} aria-label="本を追加">
@@ -94,47 +100,13 @@ function Shelf({ title, books, open }: { title: string; books: Book[]; open?: bo
   );
 }
 
-function Backup() {
-  const toast = useToast();
-  const file = useRef<HTMLInputElement>(null);
+function SyncCard({ onOpen }: { onOpen: () => void }) {
   return (
     <section className="backup">
-      <p className="hint">記録はこの端末の中だけに保存されます。機種変更の前にバックアップしてください。</p>
-      <div className="row">
-        <button
-          className="secondary"
-          onClick={async () => {
-            const blob = new Blob([JSON.stringify(await exportAll(), null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `yomikake-${new Date().toISOString().slice(0, 10)}.json`;
-            a.click();
-            URL.revokeObjectURL(a.href);
-          }}
-        >
-          バックアップを保存
-        </button>
-        <button className="secondary" onClick={() => file.current?.click()}>
-          バックアップから復元
-        </button>
-        <input
-          ref={file}
-          type="file"
-          accept="application/json,.json"
-          hidden
-          onChange={async (e) => {
-            const f = e.target.files?.[0];
-            e.target.value = '';
-            if (!f || !confirm('いまの記録をすべて置き換えて復元しますか?')) return;
-            try {
-              await importAll(JSON.parse(await f.text()));
-              toast('復元しました');
-            } catch (err) {
-              toast(err instanceof Error ? err.message : '復元できませんでした');
-            }
-          }}
-        />
-      </div>
+      <p className="hint">記録はこの端末の中に保存されます。iCloud Drive を通してほかの端末とそろえられます。</p>
+      <button className="secondary" onClick={onOpen}>
+        ☁️ iCloud で同期
+      </button>
     </section>
   );
 }

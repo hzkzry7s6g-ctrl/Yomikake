@@ -8,6 +8,8 @@ const ch = (id: number, firstPage: number): Character => ({
   name: `人物${id}`,
   firstPage,
   createdAt: 0,
+  uid: `c${id}`,
+  updatedAt: 0,
 });
 const rel = (id: number, fromId: number, toId: number, revealedPage: number): Relation => ({
   id,
@@ -17,6 +19,8 @@ const rel = (id: number, fromId: number, toId: number, revealedPage: number): Re
   label: '友人',
   revealedPage,
   createdAt: 0,
+  uid: `r${id}`,
+  updatedAt: 0,
 });
 
 const characters = [ch(1, 0), ch(2, 50), ch(3, 120)];

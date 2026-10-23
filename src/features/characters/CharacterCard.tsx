@@ -1,6 +1,6 @@
 import type { Character, Relation } from '../../db/db';
 import { db } from '../../db/db';
-import { deleteCharacter } from '../../db/actions';
+import { deleteCharacter, deleteRelation } from '../../db/actions';
 import { Sheet } from '../../components/Sheet';
 import { useToast } from '../../components/Toast';
 
@@ -65,7 +65,7 @@ export function CharacterCard({
               {nameOf(r.fromId)} は {nameOf(r.toId)} の<strong>{r.label}</strong>
               <small> (p.{r.revealedPage})</small>
             </span>
-            <button className="icon-btn" aria-label="関係を削除" onClick={() => db.relations.delete(r.id)}>
+            <button className="icon-btn" aria-label="関係を削除" onClick={() => deleteRelation(r.id)}>
               🗑
             </button>
           </li>
